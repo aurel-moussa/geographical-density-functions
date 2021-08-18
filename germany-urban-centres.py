@@ -18,7 +18,7 @@ from pylab import rcParams
 #download_url = "https://www.destatis.de/DE/Themen/Laender-Regionen/Regionales/Gemeindeverzeichnis/Administrativ/Archiv/GVAuszugQ/AuszugGV2QAktuell.xlsx?__blob=publicationFile"
 #location = os.getcwd()
 #file = wget.download(download_url, location)
-file = "#" #add your file path here
+file = "#" #add your file path here if you already downloaded the file
 
 workbook = openpyxl.load_workbook(file)
 worksheet = workbook["Onlineprodukt_Gemeinden"]
@@ -51,13 +51,18 @@ features['Laengengrad'] = features['Laengengrad'].str.replace(",", ".").astype(f
 #print(low_pop['Gemeindename'].head(50))
 #print(low_pop['Bevoelkerung_insg'].head(50))
 
+#filter for major population centres
+#add code here
+
 #set diagram parameters
 rcParams['figure.figsize'] = (14,10)
-llon=-140
-ulon=-50
-llat=40
-ulat=65
+llon=4
+ulon=15
 
+llat=55
+ulat=45
+
+#create the map
 my_map = Basemap(projection='merc',
             resolution = 'l', area_thresh = 1000.0,
             llcrnrlon=llon, llcrnrlat=llat, #min longitude (llcrnrlon) and latitude (llcrnrlat)
@@ -65,3 +70,11 @@ my_map = Basemap(projection='merc',
 
 my_map.drawcoastlines()
 my_map.drawcountries()
+# my_map.drawmapboundary()
+my_map.fillcontinents(color = 'white', alpha = 0.3)
+my_map.shadedrelief()
+
+# Get the map points of different cities
+xs,ys = my_map(np.asarray(features.Breitengrad), np.asarray(pdf.Laengengrad))
+pdf['xm']= xs.tolist()
+pdf['ym'] =ys.tolist()
